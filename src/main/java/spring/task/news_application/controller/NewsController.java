@@ -23,9 +23,9 @@ public class NewsController {
     @Autowired
     private SaveDateAboutNewsInterface saveDateAboutNewsInterface;
 
-    @RequestMapping(value = "//", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public String guideForUsers() {
-        return  "  Для поиска по категориям /category/{country}/{category} - пример: /category/ua/sport " +
+        return  "Для поиска по категориям /category/{country}/{category} - пример: /category/ua/sport " +
                 "\nДля поиска по странам /country/{country} - пример: /country/ua" +
                 "\nДля сохранение данных в Word файл о новостях с пометкой категории + страна -  /category/{country}/{category}/word" +
                 "\nДля сохранение данных в Word файл о новостях с пометкой страна - /country/{country}/word";
