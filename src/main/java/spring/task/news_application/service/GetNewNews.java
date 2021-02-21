@@ -19,7 +19,7 @@ public class GetNewNews implements GetNewNewsInterface {
         String author;
         String title;
         String description;
-        String urlOther;
+        String url;
         String urlToImage;
         String publishedAt;
 
@@ -34,14 +34,14 @@ public class GetNewNews implements GetNewNewsInterface {
             }
             title = arrayElements.getString("title");
             description = arrayElements.getString("description");
-            urlOther = arrayElements.getString("url");
+            url = arrayElements.getString("url");
             urlToImage = arrayElements.getString("urlToImage");
             publishedAt = arrayElements.getString("publishedAt");
 
             articleList.setAuthor(author);
             articleList.setDescription(description);
             articleList.setPublishedAt(publishedAt);
-            articleList.setUrl(urlOther);
+            articleList.setUrl(url);
             articleList.setSource(name);
             articleList.setTitle(title);
             articleList.setImageToUrl(urlToImage);

@@ -41,6 +41,8 @@ public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
             run.addBreak();
             run.setText("Источник: " + article.getSource());
             run.addBreak();
+            run.setText("Ссылка на публикацию: " + article.getUrl());
+            run.addBreak();
             if(article.getImageToUrl() == null) {
                 run.setText("Не было найдено изображения!");
             } else {
