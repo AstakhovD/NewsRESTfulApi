@@ -1,8 +1,8 @@
 package spring.task.news_application.controller;
 
 import spring.task.news_application.model.Article;
-import spring.task.news_application.service.NewsServiceInterface;
-import spring.task.news_application.service.SaveDateAboutNewsInterface;
+import spring.task.news_application.model.service.NewsServiceInterface;
+import spring.task.news_application.model.service.SaveDateAboutNewsInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package spring.task.news_application.service;
+package spring.task.news_application.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import spring.task.news_application.model.Article;

@@ -1,4 +1,4 @@
-package spring.task.news_application.service;
+package spring.task.news_application.model.service;
 
 import spring.task.news_application.model.Article;
 import org.json.JSONObject;

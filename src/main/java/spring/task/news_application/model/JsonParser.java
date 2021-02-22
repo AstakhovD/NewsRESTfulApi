@@ -1,8 +1,8 @@
 package spring.task.news_application.model;
 
 import org.apache.logging.log4j.LogManager;
-import spring.task.news_application.service.GetNewNews;
-import spring.task.news_application.service.GetNewNewsInterface;
+import spring.task.news_application.model.service.GetNewNews;
+import spring.task.news_application.model.service.GetNewNewsInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
