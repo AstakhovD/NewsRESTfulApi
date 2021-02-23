@@ -25,25 +25,25 @@ public class NewsController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String guideForUsers() {
-        return  "Для поиска по категориям /category/{country}/{category} - пример: /category/ua/sport " +
-                "\nДля поиска по странам /country/{country} - пример: /country/ua" +
-                "\nДля сохранение данных в Word файл о новостях с пометкой категории + страна -  /category/{country}/{category}/word" +
-                "\nДля сохранение данных в Word файл о новостях с пометкой страна - /country/{country}/word";
+        return  "Для поиска по категориям /news/category/{category}/{country} - пример: /news/category/sport/ua " +
+                "\nДля поиска по странам /news/country/{country} - пример: /news/country/ua" +
+                "\nДля сохранение данных в Word файл о новостях с пометкой категории + страна -  /news/category/{category}/{country}/word" +
+                "\nДля сохранение данных в Word файл о новостях с пометкой страна - /news/country/{country}/word";
     }
 
-    @GetMapping(value = "/category/{country}/{category}")
+    @GetMapping(value = "/news/category/{category}/{country}")
     public ResponseEntity categorizedDate(@PathVariable String country, @PathVariable String category) throws ExecutionException, InterruptedException {
         List<Article> articleList = newsServiceInterface.searchByCategory(country,category);
         return new ResponseEntity(articleList, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/country/{country}")
+    @GetMapping(value = "/news/country/{country}")
     public ResponseEntity sendSourcedUpdate(@PathVariable String country) throws ExecutionException, InterruptedException {
         List<Article> articleList = newsServiceInterface.searchByCountry(country);
         return new ResponseEntity(articleList,HttpStatus.OK);
     }
 
-    @GetMapping(value = "/country/{country}/word")
+    @GetMapping(value = "/news/country/{country}/word")
     public ResponseEntity<byte[]> saveInWordCountry(@PathVariable String country) throws IOException, ExecutionException, InterruptedException {
         File file = new File("saveCountry.docx");
         byte[] document = saveDateAboutNewsInterface.saveForCountry(country).toByteArray();
@@ -51,7 +51,7 @@ public class NewsController {
                 .contentLength(document.length).body(document);
     }
 
-    @GetMapping(value = "/category/{country}/{category}/word")
+    @GetMapping(value = "/news/category/{category}/{country}/word")
     public ResponseEntity<byte[]> saveInWordCategory(@PathVariable String country, @PathVariable String category) throws IOException, ExecutionException, InterruptedException {
         File file = new File("saveCategoryAndCountry.docx");
         byte[] document = saveDateAboutNewsInterface.saveForCategory(country, category).toByteArray();
