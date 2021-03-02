@@ -1,6 +1,8 @@
 package spring.task.news_application.model.service;
 
 import org.apache.logging.log4j.LogManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import spring.task.news_application.model.Article;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @Service
+@CacheConfig(cacheNames = {"cacheServ"})
 public class NewsService implements NewsServiceInterface {
 
     private static final Logger logger = LogManager.getLogger(NewsService.class);
@@ -38,6 +41,7 @@ public class NewsService implements NewsServiceInterface {
         return listFuture.get();
     }
 
+    @Cacheable
     public List<Article> searchByCategory(String country, String category) throws ExecutionException, InterruptedException {
         String url = uriComponentsBuilder.cloneBuilder().queryParam("country", country).queryParam("category", category).build().toString();
         try {
@@ -48,6 +52,7 @@ public class NewsService implements NewsServiceInterface {
         return asynchronousForNews(url);
     }
 
+    @Cacheable
     public List<Article> searchByCountry(String country) throws ExecutionException, InterruptedException {
         String url = uriComponentsBuilder.cloneBuilder().queryParam("country", country).build().toString();
         try {

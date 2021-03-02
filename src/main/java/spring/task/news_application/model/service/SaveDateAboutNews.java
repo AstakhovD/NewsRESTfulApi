@@ -1,6 +1,8 @@
 package spring.task.news_application.model.service;
 
 import org.apache.logging.log4j.LogManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import spring.task.news_application.model.Article;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
+@CacheConfig(cacheNames = {"newsSave"})
 public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
 
     public static final Logger logger = LogManager.getLogger(SaveDateAboutNews.class);
@@ -27,6 +30,7 @@ public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
     @Autowired
     private NewsServiceInterface newsServiceInterface;
 
+    @Cacheable
     public ByteArrayOutputStream writeInWord(List<Article> articleList) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 

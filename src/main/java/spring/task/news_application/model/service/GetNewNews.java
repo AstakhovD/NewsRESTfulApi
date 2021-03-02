@@ -1,6 +1,8 @@
 package spring.task.news_application.model.service;
 
 import org.apache.logging.log4j.LogManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import spring.task.news_application.model.Article;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -8,11 +10,13 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
+@CacheConfig(cacheNames = {"dateNews"})
 public class GetNewNews implements GetNewNewsInterface {
 
     public static final Logger logger = LogManager.getLogger(GetNewNews.class);
 
     @Override
+    @Cacheable
     public Article getNewNews(JSONObject arrayElements) {
 
         String name;
