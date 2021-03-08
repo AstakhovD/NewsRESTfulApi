@@ -22,3 +22,5 @@ public class WebConfiguration implements WebMvcConfigurer {
                 mediaType("json", MediaType.APPLICATION_JSON);
     }
 }
+
+

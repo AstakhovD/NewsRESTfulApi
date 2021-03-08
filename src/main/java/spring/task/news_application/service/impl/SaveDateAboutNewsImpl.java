@@ -1,4 +1,4 @@
-package spring.task.news_application.model.service;
+package spring.task.news_application.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.springframework.cache.annotation.CacheConfig;
@@ -12,6 +12,8 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import spring.task.news_application.service.NewsService;
+import spring.task.news_application.service.SaveDateAboutNews;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,12 +25,12 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 @CacheConfig(cacheNames = {"newsSave"})
-public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
+public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
 
-    public static final Logger logger = LogManager.getLogger(SaveDateAboutNews.class);
+    public static final Logger logger = LogManager.getLogger(SaveDateAboutNewsImpl.class);
 
     @Autowired
-    private NewsServiceInterface newsServiceInterface;
+    private NewsService newsServiceInterface;
 
     @Cacheable
     public ByteArrayOutputStream writeInWord(List<Article> articleList) {
@@ -55,11 +57,20 @@ public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
                             Units.toEMU(450), Units.toEMU(300));
                 } catch (IOException | InvalidFormatException e) {
                     run.setText("Не было найдено изображения!");
-                    logger.error("IOException/InvalidFormatException");
+                    logger.error("IOException/InvalidFormatException", e);
                 }
             }
             run.addBreak();
-            run.setText("Описание: " + article.getDescription());
+            if(article.getDescription() == null) {
+                run.setText("Отсуствует описание!");
+            } else {
+                try {
+                    run.setText("Описание: " + article.getDescription());
+                } catch (Exception e) {
+                    run.setText("Отсуствует описание!");
+                    logger.error("Exception", e);
+                }
+            }
             run.addBreak();
             run.setText("Дата публикации: " + article.getPublishedAt());
             run.addBreak();
@@ -71,7 +82,7 @@ public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
             byteArrayOutputStream.close();
             document.close();
         } catch (IOException e) {
-            logger.error("IOException");
+            logger.error("IOException", e);
         }
         return byteArrayOutputStream;
     }
@@ -90,5 +101,21 @@ public class SaveDateAboutNews implements SaveDateAboutNewsInterface {
 
     public ByteArrayOutputStream saveForCategory(String urlCountry, String urlCategory) throws ExecutionException, InterruptedException {
         return writeInWord(newsServiceInterface.searchByCategory(urlCountry, urlCategory));
+    }
+
+    public ByteArrayOutputStream saveForOnlyCategory(String urlCategory) throws ExecutionException, InterruptedException  {
+        return writeInWord(newsServiceInterface.searchByOnlyCategory(urlCategory));
+    }
+
+    public ByteArrayOutputStream saveForOnlyLanguage(String urlLanguage) throws ExecutionException, InterruptedException {
+        return writeInWord(newsServiceInterface.searchByLanguage(urlLanguage));
+    }
+
+    public ByteArrayOutputStream saveByKeyWord(String urlQ) throws ExecutionException, InterruptedException {
+        return writeInWord(newsServiceInterface.searchByQ(urlQ));
+    }
+
+    public ByteArrayOutputStream saveBySource(String urlSource) throws ExecutionException, InterruptedException {
+        return writeInWord(newsServiceInterface.searchBySource(urlSource));
     }
 }

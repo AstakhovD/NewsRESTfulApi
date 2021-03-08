@@ -1,6 +1,6 @@
 package spring.task.news_application.config;
 
-import spring.task.news_application.model.JsonParser;
+import spring.task.news_application.dao.JsonParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -16,3 +16,4 @@ public class JsonParserSetup {
         return defaultConversionService;
     }
 }
+

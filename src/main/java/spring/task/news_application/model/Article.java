@@ -1,5 +1,7 @@
 package spring.task.news_application.model;
 
+import java.util.Objects;
+
 public class Article {
 
     private String author;
@@ -64,6 +66,22 @@ public class Article {
 
     public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Article article = (Article) o;
+        return Objects.equals(author, article.author) && Objects.equals(source, article.source) &&
+                Objects.equals(title, article.title) && Objects.equals(url, article.url)
+                && Objects.equals(description, article.description) && Objects.equals(imageToUrl, article.imageToUrl)
+                && Objects.equals(publishedAt, article.publishedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(author, source, title, url, description, imageToUrl, publishedAt);
     }
 
     @Override

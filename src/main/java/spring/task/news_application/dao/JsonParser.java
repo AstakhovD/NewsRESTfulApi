@@ -1,8 +1,7 @@
-package spring.task.news_application.model;
+package spring.task.news_application.dao;
 
 import org.apache.logging.log4j.LogManager;
-import spring.task.news_application.model.service.GetNewNews;
-import spring.task.news_application.model.service.GetNewNewsInterface;
+import spring.task.news_application.model.Article;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +19,7 @@ public class JsonParser implements Converter<String, List<Article>> {
     @Override
     public List<Article> convert(String url) {
         List<Article> articleList = new ArrayList<>();
-        GetNewNewsInterface getNewNewsInterface = new GetNewNews();
+        GetNewNews getNewNewsInterface = new GetNewNewsImpl();
 
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -33,7 +32,7 @@ public class JsonParser implements Converter<String, List<Article>> {
                 articleList.add(getNewNewsInterface.getNewNews(arrayElements));
             }
         } catch (JSONException e) {
-            logger.error("JSONException");
+            logger.error("JSONException", e);
         }
         return articleList;
     }
