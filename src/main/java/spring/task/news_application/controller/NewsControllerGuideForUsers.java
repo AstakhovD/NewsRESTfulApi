@@ -7,6 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NewsControllerGuideForUsers {
 
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String guide() {
+        return "Помощь по поиску новостей - /guideForUsersSearch" +
+                "\nПомощь по сохранению данных - /guideForUsersSave" +
+                "\nИнформация о доступных категориях, странах, языках - /validDate/categories , /validDate/country, /validDate/language";
+    }
+
     @RequestMapping(value = "/guideForUsersSearch", method = RequestMethod.GET)
     public String guideForUsersSearch() {
         return "Для поиска новостей по категориям и стране - /news/category/{category}/{country} - пример: /news/category/sport/ua " +

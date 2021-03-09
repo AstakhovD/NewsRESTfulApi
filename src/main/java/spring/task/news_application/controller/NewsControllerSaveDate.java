@@ -20,7 +20,7 @@ public class NewsControllerSaveDate {
 
     @GetMapping(value = "/news/country/{country}/word")
     public ResponseEntity<byte[]> saveInWordCountry(@PathVariable String country) throws ExecutionException, InterruptedException {
-        File file = new File("saveCountry.docx");
+        File file = new File("saveCountry");
         byte[] document = saveDateAboutNewsInterface.saveForCountry(country).toByteArray();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentLength(document.length).body(document);
@@ -28,7 +28,7 @@ public class NewsControllerSaveDate {
 
     @GetMapping(value = "/news/category/{category}/{country}/word")
     public ResponseEntity<byte[]> saveInWordCategory(@PathVariable String country, @PathVariable String category) throws ExecutionException, InterruptedException {
-        File file = new File("saveCategoryAndCountry.docx");
+        File file = new File("saveCategoryAndCountry");
         byte[] document = saveDateAboutNewsInterface.saveForCategory(country, category).toByteArray();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentLength(document.length).body(document);
@@ -36,7 +36,7 @@ public class NewsControllerSaveDate {
 
     @GetMapping(value = "/news/category/{category}/word")
     public ResponseEntity<byte[]> saveInWordOnlyCategory(@PathVariable String category) throws ExecutionException, InterruptedException {
-        File file = new File("saveCategory.docx");
+        File file = new File("saveCategory");
         byte[] document = saveDateAboutNewsInterface.saveForOnlyCategory(category).toByteArray();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentLength(document.length).body(document);
@@ -44,7 +44,7 @@ public class NewsControllerSaveDate {
 
     @GetMapping(value = "/news/language/{language}/word")
     public ResponseEntity<byte[]> saveInWordOnlyLanguage(@PathVariable String language) throws ExecutionException, InterruptedException {
-        File file = new File("saveLanguage.docx");
+        File file = new File("saveLanguage");
         byte[] document = saveDateAboutNewsInterface.saveForOnlyLanguage(language).toByteArray();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentLength(document.length).body(document);
@@ -52,7 +52,7 @@ public class NewsControllerSaveDate {
 
     @GetMapping(value = "/news/q/{q}/word")
     public ResponseEntity<byte[]> saveByKeyWord(@PathVariable String q) throws ExecutionException, InterruptedException {
-        File file = new File("saveByKeyWord.docx");
+        File file = new File("saveByKeyWord");
         byte[] document = saveDateAboutNewsInterface.saveByKeyWord(q).toByteArray();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentLength(document.length).body(document);
@@ -60,7 +60,7 @@ public class NewsControllerSaveDate {
 
     @GetMapping(value = "/news/sources/{sources}/word")
     public ResponseEntity<byte[]> saveBySources(@PathVariable String sources) throws ExecutionException, InterruptedException {
-        File file = new File(("saveBySources.docx"));
+        File file = new File(("saveBySources"));
         byte[] document = saveDateAboutNewsInterface.saveBySource(sources).toByteArray();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentLength(document.length).body(document);
