@@ -4,6 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * The class is a controller.
+ * The class is a guide for the user. Contains examples for all possible queries.
+ */
+
 @RestController
 public class NewsControllerGuideForUsers {
 

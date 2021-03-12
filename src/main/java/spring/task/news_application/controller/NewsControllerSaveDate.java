@@ -1,6 +1,5 @@
 package spring.task.news_application.controller;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,11 @@ import spring.task.news_application.service.SaveDateAboutNews;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
+
+/**
+ * The class is a controller.
+ * The class is responsible for processing requests related to saving data to a file (.docx).
+ */
 
 @RestController
 public class NewsControllerSaveDate {

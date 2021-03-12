@@ -7,10 +7,22 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * This class is one of the Configuration's classes, enable MVC and enable caching.
+ * Also implements interface WebMvcConfigurer and implemented one method that helps REST Controller return JSON or XML.
+ */
+
 @Configuration
 @EnableWebMvc
 @EnableCaching
 public class WebConfiguration implements WebMvcConfigurer {
+
+    /**
+     * Implementing of method from interface, that set default content type
+     * as JSON with favorParameter.
+     *
+     * @param configurer object of ContentNegotiationConfigurer class
+     */
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {

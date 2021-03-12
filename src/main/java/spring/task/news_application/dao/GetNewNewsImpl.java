@@ -9,6 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+/**
+ * Class implementation GetNewNews. The class is a service.
+ * This class is responsible for receiving new data.
+ * Support caching.
+ */
+
 @Service
 @CacheConfig(cacheNames = {"dateNews"})
 public class GetNewNewsImpl implements GetNewNews {

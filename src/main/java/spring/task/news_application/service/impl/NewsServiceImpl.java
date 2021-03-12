@@ -15,6 +15,12 @@ import spring.task.news_application.service.NewsService;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * Class implementation NewsService. The class is a service.
+ * This class is responsible for retrieving data when requested by the user.
+ * Supports caching.
+ */
+
 @Service
 @CacheConfig(cacheNames = {"cacheServ"})
 public class NewsServiceImpl implements NewsService {

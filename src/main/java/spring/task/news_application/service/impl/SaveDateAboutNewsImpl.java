@@ -23,6 +23,12 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Class implementation SaveDateAboutNews. The class is a service.
+ * This class is responsible for saving data to a file (.docx) upon user request.
+ * Supports caching.
+ */
+
 @Service
 @CacheConfig(cacheNames = {"newsSave"})
 public class SaveDateAboutNewsImpl implements SaveDateAboutNews {

@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * The class is a controller.
+ * The class is responsible for processing requests and receiving data.
+ */
+
 @RestController
 public class NewsControllerSearch {
 
