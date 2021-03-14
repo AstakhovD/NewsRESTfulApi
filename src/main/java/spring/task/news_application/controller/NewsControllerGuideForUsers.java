@@ -1,5 +1,6 @@
 package spring.task.news_application.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,11 +13,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NewsControllerGuideForUsers {
 
+    @Value("${validCountry}")
+    private String validCountry;
+    @Value("${validCategories}")
+    private String validCategories;
+    @Value("${validLanguage}")
+    private String validLanguage;
+
+    @RequestMapping(value = "/news/language", method = RequestMethod.GET)
+    public String validDateLanguage() {
+        return validLanguage;
+    }
+
+    @RequestMapping(value = "/news/country", method = RequestMethod.GET)
+    public String validDateCountry() {
+        return validCountry;
+    }
+
+    @RequestMapping(value = "/news/category", method = RequestMethod.GET)
+    public String validDateCategories() {
+        return validCategories;
+    }
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String guide() {
         return "Помощь по поиску новостей - /guideForUsersSearch" +
-                "\nПомощь по сохранению данных - /guideForUsersSave" +
-                "\nИнформация о доступных категориях, странах, языках - /validDate/categories , /validDate/country, /validDate/language";
+                "\nПомощь по сохранению данных - /guideForUsersSave";
     }
 
     @RequestMapping(value = "/guideForUsersSearch", method = RequestMethod.GET)
@@ -40,18 +62,4 @@ public class NewsControllerGuideForUsers {
                 "\nДля сохранения данных в Word файл о новостях с указанным языком - /news/language/{language}/word";
     }
 
-    @RequestMapping(value = "/validDate/language", method = RequestMethod.GET)
-    public String validDateLanguage() {
-        return "Доступные языки для поиска - ar, de, en, es, fr, he, it, nl, no, pt, ru, uk, se, ud, zh";
-    }
-
-    @RequestMapping(value = "/validDate/country", method = RequestMethod.GET)
-    public String validDateCountry() {
-        return "Доступные страны для поиска - ar, au, br, ca, cn, de, es, fr, gb, hk, ie, in, is, nl, no, pk, ru, sa, sv, us, ua, za";
-    }
-
-    @RequestMapping(value = "/validDate/categories", method = RequestMethod.GET)
-    public String validDateCategories() {
-        return "Доступные категории для поиска - business, entertainment, gaming, general, health, politics, science, sport, technology";
-    }
 }
