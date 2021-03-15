@@ -1,7 +1,6 @@
 package spring.task.news_application.service.impl;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,10 +19,6 @@ import spring.task.news_application.service.SaveDateAboutNews;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -51,87 +46,86 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
     @Cacheable
     public ByteArrayOutputStream writeInWord(List<Article> articleList) throws IOException {
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         File file = new File(docTemplatePath);
-        if (!file.exists()) {
-            createFileWithFolder();
-        }
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            try (XWPFDocument document = new XWPFDocument(fileInputStream)) {
-                XWPFParagraph paragraph = document.createParagraph();
 
-                for (Article article : articleList) {
-                    XWPFRun run = paragraph.createRun();
-                    run.setText("Название: " + article.getTitle());
-                    run.setFontFamily("Times New Roman");
-                    run.setFontSize(14);
-                    run.addBreak();
+        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            FileInputStream fileInputStream = new FileInputStream(file);
+            XWPFDocument document = new XWPFDocument(fileInputStream)) {
 
-                    run.setText("Автор: " + article.getAuthor());
-                    run.setFontFamily("Times New Roman");
-                    run.setFontSize(14);
-                    run.addBreak();
+                    XWPFParagraph paragraph = document.createParagraph();
 
-                    run.setText("Источник: " + article.getSource());
-                    run.setFontFamily("Times New Roman");
-                    run.setFontSize(14);
-                    run.addBreak();
+                    for (Article article : articleList) {
+                        XWPFRun run = paragraph.createRun();
+                        run.setText("Название: " + article.getTitle());
+                        run.setFontFamily("Times New Roman");
+                        run.setFontSize(14);
+                        run.addBreak();
 
-                    run.setText("Ссылка на публикацию: " + article.getUrl());
-                    run.setFontFamily("Times New Roman");
-                    run.setFontSize(14);
-                    run.addBreak();
+                        run.setText("Автор: " + article.getAuthor());
+                        run.setFontFamily("Times New Roman");
+                        run.setFontSize(14);
+                        run.addBreak();
 
-                    if (article.getImageToUrl().isEmpty()) {
-                        run.setText("Не было найдено изображения!");
-                    } else {
-                        try {
-                            run.addPicture(takeImageFromUrl(article.getImageToUrl()), XWPFDocument.PICTURE_TYPE_JPEG, "",
-                                    Units.toEMU(450), Units.toEMU(300));
-                        } catch (IOException | InvalidFormatException e) {
+                        run.setText("Источник: " + article.getSource());
+                        run.setFontFamily("Times New Roman");
+                        run.setFontSize(14);
+                        run.addBreak();
+
+                        run.setText("Ссылка на публикацию: " + article.getUrl());
+                        run.setFontFamily("Times New Roman");
+                        run.setFontSize(14);
+                        run.addBreak();
+
+                        if (article.getImageToUrl().isEmpty()) {
                             run.setText("Не было найдено изображения!");
-                            logger.error("IOException/InvalidFormatException", e);
+                        } else {
+                            try {
+                                run.addPicture(takeImageFromUrl(article.getImageToUrl()), XWPFDocument.PICTURE_TYPE_JPEG, "",
+                                        Units.toEMU(450), Units.toEMU(300));
+                            } catch (IOException | InvalidFormatException e) {
+                                run.setText("Не было найдено изображения!");
+                                logger.error("IOException/InvalidFormatException", e);
+                            }
                         }
-                    }
-                    run.setTextPosition(20);
-                    run.addBreak();
+                        run.setTextPosition(20);
+                        run.addBreak();
 
-                    if (article.getDescription() == null) {
-                        run.setText("Отсуствует описание!");
-                    } else {
-                        try {
-                            run.setText("Описание: " + article.getDescription());
-                        } catch (Exception e) {
+                        if (article.getDescription() == null) {
                             run.setText("Отсуствует описание!");
-                            logger.error("Exception", e);
+                        } else {
+                            try {
+                                run.setText("Описание: " + article.getDescription());
+                            } catch (Exception e) {
+                                run.setText("Отсуствует описание!");
+                                logger.error("Exception", e);
+                            }
                         }
-                    }
-                    run.setFontFamily("Times New Roman");
-                    run.setFontSize(14);
-                    run.addBreak();
+                        run.setFontFamily("Times New Roman");
+                        run.setFontSize(14);
+                        run.addBreak();
 
-                    run.setText("Дата публикации: " + article.getPublishedAt());
-                    run.setFontFamily("Times New Roman");
-                    run.setFontSize(14);
-                    run.addBreak();
-                    run.addBreak();
-                }
-                try {
-                    document.write(byteArrayOutputStream);
-                } catch (IOException e) {
-                    logger.error("IOException", e);
-                } finally {
+                        run.setText("Дата публикации: " + article.getPublishedAt());
+                        run.setFontFamily("Times New Roman");
+                        run.setFontSize(14);
+                        run.addBreak();
+                        run.addBreak();
+                    }
                     try {
-                        byteArrayOutputStream.flush();
-                        byteArrayOutputStream.close();
+                        document.write(byteArrayOutputStream);
                     } catch (IOException e) {
                         logger.error("IOException", e);
+                    } finally {
+                        try {
+                            byteArrayOutputStream.flush();
+                            byteArrayOutputStream.close();
+                        } catch (IOException e) {
+                            logger.error("IOException", e);
+                        }
                     }
-                }
-            }
-            return byteArrayOutputStream;
+                    return byteArrayOutputStream;
         }
     }
+
 
     public InputStream takeImageFromUrl(String url) throws IOException {
         URL urls = new URL(url);
@@ -139,27 +133,6 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
         InputStream inputStream = urls.openStream();
         connection.setRequestProperty("User-Agent", "Firefox");
         return inputStream;
-    }
-
-    private void createFileWithFolder() {
-        Path path = Paths.get(docTemplatePath);
-        try {
-            Files.createDirectories(path.getParent());
-        } catch (IOException e) {
-            logger.error("Can't create folder by path", e);
-        }
-        try {
-            XWPFDocument document = new XWPFDocument();
-            FileOutputStream out = new FileOutputStream(
-                    new File(docTemplatePath));
-            document.write(out);
-            out.close();
-            document.close();
-        } catch (FileAlreadyExistsException e) {
-            logger.error("Нет возможности создать файл в папке", e);
-        } catch (IOException e) {
-            logger.error("Ошибка при чтение файла", e);
-        }
     }
 
     public ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException, IOException {
