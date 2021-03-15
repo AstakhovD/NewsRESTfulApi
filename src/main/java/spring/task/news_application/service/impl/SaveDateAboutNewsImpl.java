@@ -1,6 +1,8 @@
 package spring.task.news_application.service.impl;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import spring.task.news_application.model.Article;
@@ -15,11 +17,13 @@ import org.springframework.stereotype.Service;
 import spring.task.news_application.service.NewsService;
 import spring.task.news_application.service.SaveDateAboutNews;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -38,59 +42,95 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
     @Autowired
     private NewsService newsServiceInterface;
 
+    private final String docTemplatePath;
+
+    public SaveDateAboutNewsImpl(@Value("${docTemplatePath}") String docTemplatePath) {
+        this.docTemplatePath = docTemplatePath;
+    }
+
     @Cacheable
-    public ByteArrayOutputStream writeInWord(List<Article> articleList) {
+    public ByteArrayOutputStream writeInWord(List<Article> articleList) throws IOException {
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        File file = new File(docTemplatePath);
+        if (!file.exists()) {
+            createFileWithFolder();
+        }
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            try (XWPFDocument document = new XWPFDocument(fileInputStream)) {
+                XWPFParagraph paragraph = document.createParagraph();
 
-        XWPFDocument document = new XWPFDocument();
-        XWPFParagraph paragraph = document.createParagraph();
+                for (Article article : articleList) {
+                    XWPFRun run = paragraph.createRun();
+                    run.setText("Название: " + article.getTitle());
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
 
-        for(Article article : articleList) {
-            XWPFRun run = paragraph.createRun();
-            run.setText("Название: " + article.getTitle());
-            run.addBreak();
-            run.setText("Автор: " + article.getAuthor());
-            run.addBreak();
-            run.setText("Источник: " + article.getSource());
-            run.addBreak();
-            run.setText("Ссылка на публикацию: " + article.getUrl());
-            run.addBreak();
-            if(article.getImageToUrl() == null) {
-                run.setText("Не было найдено изображения!");
-            } else {
+                    run.setText("Автор: " + article.getAuthor());
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+
+                    run.setText("Источник: " + article.getSource());
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+
+                    run.setText("Ссылка на публикацию: " + article.getUrl());
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+
+                    if (article.getImageToUrl().isEmpty()) {
+                        run.setText("Не было найдено изображения!");
+                    } else {
+                        try {
+                            run.addPicture(takeImageFromUrl(article.getImageToUrl()), XWPFDocument.PICTURE_TYPE_JPEG, "",
+                                    Units.toEMU(450), Units.toEMU(300));
+                        } catch (IOException | InvalidFormatException e) {
+                            run.setText("Не было найдено изображения!");
+                            logger.error("IOException/InvalidFormatException", e);
+                        }
+                    }
+                    run.setTextPosition(20);
+                    run.addBreak();
+
+                    if (article.getDescription() == null) {
+                        run.setText("Отсуствует описание!");
+                    } else {
+                        try {
+                            run.setText("Описание: " + article.getDescription());
+                        } catch (Exception e) {
+                            run.setText("Отсуствует описание!");
+                            logger.error("Exception", e);
+                        }
+                    }
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+
+                    run.setText("Дата публикации: " + article.getPublishedAt());
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+                    run.addBreak();
+                }
                 try {
-                    run.addPicture(takeImageFromUrl(article.getImageToUrl()), XWPFDocument.PICTURE_TYPE_JPEG, "",
-                            Units.toEMU(450), Units.toEMU(300));
-                } catch (IOException | InvalidFormatException e) {
-                    run.setText("Не было найдено изображения!");
-                    logger.error("IOException/InvalidFormatException", e);
+                    document.write(byteArrayOutputStream);
+                } catch (IOException e) {
+                    logger.error("IOException", e);
+                } finally {
+                    try {
+                        byteArrayOutputStream.flush();
+                        byteArrayOutputStream.close();
+                    } catch (IOException e) {
+                        logger.error("IOException", e);
+                    }
                 }
             }
-            run.addBreak();
-            if(article.getDescription() == null) {
-                run.setText("Отсуствует описание!");
-            } else {
-                try {
-                    run.setText("Описание: " + article.getDescription());
-                } catch (Exception e) {
-                    run.setText("Отсуствует описание!");
-                    logger.error("Exception", e);
-                }
-            }
-            run.addBreak();
-            run.setText("Дата публикации: " + article.getPublishedAt());
-            run.addBreak();
-            run.addBreak();
+            return byteArrayOutputStream;
         }
-        try {
-            document.write(byteArrayOutputStream);
-            byteArrayOutputStream.flush();
-            byteArrayOutputStream.close();
-            document.close();
-        } catch (IOException e) {
-            logger.error("IOException", e);
-        }
-        return byteArrayOutputStream;
     }
 
     public InputStream takeImageFromUrl(String url) throws IOException {
@@ -101,27 +141,48 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
         return inputStream;
     }
 
-    public ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException {
+    private void createFileWithFolder() {
+        Path path = Paths.get(docTemplatePath);
+        try {
+            Files.createDirectories(path.getParent());
+        } catch (IOException e) {
+            logger.error("Can't create folder by path", e);
+        }
+        try {
+            XWPFDocument document = new XWPFDocument();
+            FileOutputStream out = new FileOutputStream(
+                    new File(docTemplatePath));
+            document.write(out);
+            out.close();
+            document.close();
+        } catch (FileAlreadyExistsException e) {
+            logger.error("Нет возможности создать файл в папке", e);
+        } catch (IOException e) {
+            logger.error("Ошибка при чтение файла", e);
+        }
+    }
+
+    public ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException, IOException {
         return writeInWord(newsServiceInterface.searchByCountry(urlCountry));
     }
 
-    public ByteArrayOutputStream saveForCategory(String urlCountry, String urlCategory) throws ExecutionException, InterruptedException {
+    public ByteArrayOutputStream saveForCategory(String urlCountry, String urlCategory) throws ExecutionException, InterruptedException, IOException {
         return writeInWord(newsServiceInterface.searchByCategory(urlCountry, urlCategory));
     }
 
-    public ByteArrayOutputStream saveForOnlyCategory(String urlCategory) throws ExecutionException, InterruptedException  {
+    public ByteArrayOutputStream saveForOnlyCategory(String urlCategory) throws ExecutionException, InterruptedException, IOException {
         return writeInWord(newsServiceInterface.searchByOnlyCategory(urlCategory));
     }
 
-    public ByteArrayOutputStream saveForOnlyLanguage(String urlLanguage) throws ExecutionException, InterruptedException {
+    public ByteArrayOutputStream saveForOnlyLanguage(String urlLanguage) throws ExecutionException, InterruptedException, IOException {
         return writeInWord(newsServiceInterface.searchByLanguage(urlLanguage));
     }
 
-    public ByteArrayOutputStream saveByKeyWord(String urlQ) throws ExecutionException, InterruptedException {
+    public ByteArrayOutputStream saveByKeyWord(String urlQ) throws ExecutionException, InterruptedException, IOException {
         return writeInWord(newsServiceInterface.searchByQ(urlQ));
     }
 
-    public ByteArrayOutputStream saveBySource(String urlSource) throws ExecutionException, InterruptedException {
+    public ByteArrayOutputStream saveBySource(String urlSource) throws ExecutionException, InterruptedException, IOException {
         return writeInWord(newsServiceInterface.searchBySource(urlSource));
     }
 }

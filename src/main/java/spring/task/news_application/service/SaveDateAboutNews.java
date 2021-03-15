@@ -14,15 +14,15 @@ public interface SaveDateAboutNews {
 
     InputStream takeImageFromUrl(String url) throws IOException;
 
-    ByteArrayOutputStream saveForCategory(String urlCountry, String urlCategory) throws ExecutionException, InterruptedException;
+    ByteArrayOutputStream saveForCategory(String urlCountry, String urlCategory) throws ExecutionException, InterruptedException, IOException;
 
-    ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException;
+    ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException, IOException;
 
-    ByteArrayOutputStream saveForOnlyCategory(String urlCategory) throws ExecutionException, InterruptedException;
+    ByteArrayOutputStream saveForOnlyCategory(String urlCategory) throws ExecutionException, InterruptedException, IOException;
 
-    ByteArrayOutputStream saveForOnlyLanguage(String urlLanguage) throws ExecutionException, InterruptedException;
+    ByteArrayOutputStream saveForOnlyLanguage(String urlLanguage) throws ExecutionException, InterruptedException, IOException;
 
-    ByteArrayOutputStream saveByKeyWord(String urlQ) throws ExecutionException, InterruptedException;
+    ByteArrayOutputStream saveByKeyWord(String urlQ) throws ExecutionException, InterruptedException, IOException;
 
-    ByteArrayOutputStream saveBySource(String urlSource) throws ExecutionException, InterruptedException;
+    ByteArrayOutputStream saveBySource(String urlSource) throws ExecutionException, InterruptedException, IOException;
 }
