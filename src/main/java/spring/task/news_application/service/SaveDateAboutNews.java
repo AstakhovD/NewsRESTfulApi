@@ -4,7 +4,6 @@ import spring.task.news_application.model.Article;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
