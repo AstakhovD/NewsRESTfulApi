@@ -18,7 +18,6 @@ import spring.task.news_application.service.SaveDateAboutNews;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -48,91 +47,115 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
 
         File file = new File(docTemplatePath);
 
-        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            FileInputStream fileInputStream = new FileInputStream(file);
-            XWPFDocument document = new XWPFDocument(fileInputStream)) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             FileInputStream fileInputStream = new FileInputStream(file);
+             XWPFDocument document = new XWPFDocument(fileInputStream)) {
 
-                    XWPFParagraph paragraph = document.createParagraph();
+            XWPFParagraph paragraph = document.createParagraph();
 
-                    for (Article article : articleList) {
-                        XWPFRun run = paragraph.createRun();
-                        run.setText("Название: " + article.getTitle());
-                        run.setFontFamily("Times New Roman");
-                        run.setFontSize(14);
-                        run.addBreak();
+            for (Article article : articleList) {
+                XWPFRun run = paragraph.createRun();
 
-                        run.setText("Автор: " + article.getAuthor());
-                        run.setFontFamily("Times New Roman");
-                        run.setFontSize(14);
-                        run.addBreak();
+                replaceText(document, "N_TITL", article.getTitle());
+                run.setFontFamily("Times New Roman");
+                run.setFontSize(14);
+                run.addBreak();
 
-                        run.setText("Источник: " + article.getSource());
-                        run.setFontFamily("Times New Roman");
-                        run.setFontSize(14);
-                        run.addBreak();
+                replaceText(document, "N_AUT", article.getAuthor());
+                run.setFontFamily("Times New Roman");
+                run.setFontSize(14);
+                run.addBreak();
 
-                        run.setText("Ссылка на публикацию: " + article.getUrl());
-                        run.setFontFamily("Times New Roman");
-                        run.setFontSize(14);
-                        run.addBreak();
+                replaceText(document, "N_SOU", article.getSource());
+                run.setFontFamily("Times New Roman");
+                run.setFontSize(14);
+                run.addBreak();
 
-                        if (article.getImageToUrl().isEmpty()) {
-                            run.setText("Не было найдено изображения!");
-                        } else {
-                            try {
-                                run.addPicture(takeImageFromUrl(article.getImageToUrl()), XWPFDocument.PICTURE_TYPE_JPEG, "",
-                                        Units.toEMU(450), Units.toEMU(300));
-                            } catch (IOException | InvalidFormatException e) {
-                                run.setText("Не было найдено изображения!");
-                                logger.error("IOException/InvalidFormatException", e);
-                            }
-                        }
-                        run.setTextPosition(20);
-                        run.addBreak();
+                replaceText(document, "N_Ur", article.getUrl());
+                run.setFontFamily("Times New Roman");
+                run.setFontSize(14);
+                run.addBreak();
 
-                        if (article.getDescription() == null) {
+                if (article.getImageToUrl().isEmpty()) {
+                    run.setText("Не было найдено изображения!");
+                } else {
+                    replaceImg(document, "N_Img", article.getImageToUrl());
+                    run.setTextPosition(20);
+                    run.addBreak();
+
+                    if (article.getDescription() == null) {
+                        run.setText("Отсуствует описание!");
+                    } else {
+                        try {
+                            replaceText(document, "N_Desc", article.getDescription());
+                        } catch (Exception e) {
                             run.setText("Отсуствует описание!");
-                        } else {
-                            try {
-                                run.setText("Описание: " + article.getDescription());
-                            } catch (Exception e) {
-                                run.setText("Отсуствует описание!");
-                                logger.error("Exception", e);
-                            }
+                            logger.error("Exception", e);
                         }
-                        run.setFontFamily("Times New Roman");
-                        run.setFontSize(14);
-                        run.addBreak();
-
-                        run.setText("Дата публикации: " + article.getPublishedAt());
-                        run.setFontFamily("Times New Roman");
-                        run.setFontSize(14);
-                        run.addBreak();
-                        run.addBreak();
                     }
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+
+                    replaceText(document, "N_Publ", article.getPublishedAt());
+                    run.setFontFamily("Times New Roman");
+                    run.setFontSize(14);
+                    run.addBreak();
+                    run.addBreak();
+                }
+                try {
+                    document.write(byteArrayOutputStream);
+                } catch (IOException e) {
+                    logger.error("IOException", e);
+                } finally {
                     try {
-                        document.write(byteArrayOutputStream);
+                        byteArrayOutputStream.flush();
+                        byteArrayOutputStream.close();
                     } catch (IOException e) {
                         logger.error("IOException", e);
-                    } finally {
-                        try {
-                            byteArrayOutputStream.flush();
-                            byteArrayOutputStream.close();
-                        } catch (IOException e) {
-                            logger.error("IOException", e);
-                        }
                     }
-                    return byteArrayOutputStream;
+                }
+            }
+            return byteArrayOutputStream;
         }
     }
 
+    private void replaceText(XWPFDocument doc, String findText, String replaceText) {
+        for (XWPFParagraph p : doc.getParagraphs()) {
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null && text.contains(findText)) {
+                        text = text.replace(findText, replaceText);
+                        r.setText(text, 0);
+                    }
+                }
+            }
+        }
+    }
 
-    public InputStream takeImageFromUrl(String url) throws IOException {
-        URL urls = new URL(url);
-        URLConnection connection = urls.openConnection();
-        InputStream inputStream = urls.openStream();
-        connection.setRequestProperty("User-Agent", "Firefox");
-        return inputStream;
+    private void replaceImg(XWPFDocument doc, String findText, String imageURL) {
+        for (XWPFParagraph p : doc.getParagraphs()) {
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null && text.contains(findText)) {
+                        r.setText("", 0);
+                        r.addBreak();
+                        try {
+                            URL url = new URL(imageURL);
+                            InputStream in = new BufferedInputStream(url.openStream());
+                            r.addPicture(in, XWPFDocument.PICTURE_TYPE_PNG, imageURL, Units.toEMU(174), Units.toEMU(174));
+                            in.close();
+                        } catch (InvalidFormatException | IOException e) {
+                            logger.error("Failed to form Url", e);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException, IOException {

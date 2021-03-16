@@ -12,8 +12,6 @@ public interface SaveDateAboutNews {
 
     ByteArrayOutputStream writeInWord(List<Article> articleList) throws IOException;
 
-    InputStream takeImageFromUrl(String url) throws IOException;
-
     ByteArrayOutputStream saveForCategory(String urlCountry, String urlCategory) throws ExecutionException, InterruptedException, IOException;
 
     ByteArrayOutputStream saveForCountry(String urlCountry) throws ExecutionException, InterruptedException, IOException;
