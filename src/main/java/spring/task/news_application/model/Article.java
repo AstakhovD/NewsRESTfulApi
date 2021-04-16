@@ -12,6 +12,19 @@ public class Article {
     private String imageToUrl;
     private String publishedAt;
 
+    public Article(String author, String source, String title, String url, String description, String imageToUrl, String  publishedAt) {
+        this.author = author;
+        this.source = source;
+        this.title = title;
+        this.url = url;
+        this.description = description;
+        this.imageToUrl = imageToUrl;
+        this.publishedAt = publishedAt;
+    }
+
+    public Article() {
+    }
+
     public String getAuthor() {
         return author;
     }
@@ -60,11 +73,11 @@ public class Article {
         this.imageToUrl = imageToUrl;
     }
 
-    public String getPublishedAt() {
+    public String  getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(String publishedAt) {
+    public void setPublishedAt(String  publishedAt) {
         this.publishedAt = publishedAt;
     }
 

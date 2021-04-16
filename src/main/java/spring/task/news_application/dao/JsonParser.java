@@ -45,9 +45,8 @@ public class JsonParser implements Converter<String, List<Article>> {
                 articleList.add(getNewNewsInterface.getNewNews(arrayElements));
             }
         } catch (JSONException e) {
-            logger.error("JSONException", e);
+            logger.error("Ошибка при попытке работе с JSON", e);
         }
         return articleList;
     }
 }
-

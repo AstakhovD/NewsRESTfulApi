@@ -48,7 +48,7 @@ public class GetNewNewsImpl implements GetNewNews {
             articleList.setTitle(articleList.getTitle());
             articleList.setImageToUrl(articleList.getImageToUrl());
         } catch (JSONException e) {
-            logger.error("JSONException", e);
+            logger.error("Ошибка при конвертации", e);
         }
         return articleList;
     }

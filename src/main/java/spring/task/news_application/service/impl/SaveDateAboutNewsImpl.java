@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -76,9 +77,10 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
                     par.setSpacingAfter(1000);
                 }
                 document.write(byteArrayOutputStream);
+                document.close();
                 return byteArrayOutputStream;
             } catch(IOException e){
-                logger.error("IOException", e);
+                logger.error("Ошибка при заполнение данных в файл", e);
             }
             return null;
         }
@@ -97,7 +99,7 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
                 doc.setParagraph(templateParagraph, position++);
             }
         } catch (IOException e) {
-            logger.error("IOException", e);
+            logger.error("Ошибка при создание документа", e);
         }
         return doc;
     }
@@ -108,9 +110,10 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
             document.write(byteOutStream);
             is = new ByteArrayInputStream(byteOutStream.toByteArray());
+            is.close();
             document.close();
         } catch (IOException e) {
-            logger.error("IOException", e);
+            logger.error("Ошибка при заполнение данных в файл", e);
         }
         return is;
     }
@@ -132,7 +135,7 @@ public class SaveDateAboutNewsImpl implements SaveDateAboutNews {
                         Units.toEMU(400), Units.toEMU(250));
             }
         } catch (IOException | InvalidFormatException e) {
-            logger.error("IOException/InvalidFormatException", e);
+            logger.error("Ошибка при попытке добавить изображение в файл", e);
         }
     }
 

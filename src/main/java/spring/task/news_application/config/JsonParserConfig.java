@@ -7,13 +7,12 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 @Configuration
-public class JsonParserSetup {
+public class JsonParserConfig {
 
     @Bean
     public ConversionService conversionService() {
-        DefaultConversionService defaultConversionService = new DefaultConversionService();
-        defaultConversionService.addConverter(new JsonParser());
-        return defaultConversionService;
+        DefaultConversionService service = new DefaultConversionService();
+        service.addConverter(new JsonParser());
+        return service;
     }
 }
-
